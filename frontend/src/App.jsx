@@ -26,7 +26,8 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     banner_number: '', first_name: '', last_name: '', email: '', 
-    dob: '', gender: 'M', category: 'Undergraduate', major: '', phone: ''
+    dob: '', gender: 'M', category: 'Undergraduate', major: '', minor: '',
+    phone: '', nationality: '', address: '', special_needs: '', status: 'waiting', course_number: ''
   });
   const [statusMsg, setStatusMsg] = useState({ type: '', text: '' });
   
@@ -78,7 +79,7 @@ const App = () => {
       setStatusMsg({ type: 'success', text: 'Student added successfully!' });
       setTimeout(() => {
         setIsModalOpen(false);
-        setFormData({ banner_number: '', first_name: '', last_name: '', email: '', dob: '', gender: 'M', category: 'Undergraduate', major: '', phone: '' });
+        setFormData({ banner_number: '', first_name: '', last_name: '', email: '', dob: '', gender: 'M', category: 'Undergraduate', major: '', minor: '', phone: '', nationality: '', address: '', special_needs: '', status: 'waiting', course_number: '' });
         setStatusMsg({ type: '', text: '' });
         fetchReportData(activeReport);
       }, 2000);

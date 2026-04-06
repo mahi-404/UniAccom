@@ -51,20 +51,6 @@ const StudentModal = ({ isOpen, onClose, formData, handleInputChange, handleSubm
               <label className="form-label">Last Name *</label>
               <input required name="last_name" value={formData.last_name} onChange={handleInputChange} className="glass-input" />
             </div>
-          </div>
-        </section>
-
-        <section className="form-group" style={{ marginTop: '2rem' }}>
-          <p className="form-section-title">Academic Details</p>
-          <div className="form-grid">
-            <div>
-              <label className="form-label">Major / Program</label>
-              <input name="major" value={formData.major} onChange={handleInputChange} className="glass-input" placeholder="e.g. Computer Science" />
-            </div>
-            <div>
-              <label className="form-label">Email Address *</label>
-              <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="glass-input" />
-            </div>
             <div>
               <label className="form-label">Date of Birth *</label>
               <input required type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="glass-input" style={{ colorScheme: 'dark' }} />
@@ -75,6 +61,57 @@ const StudentModal = ({ isOpen, onClose, formData, handleInputChange, handleSubm
                 <option value="M">Male</option>
                 <option value="F">Female</option>
                 <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="form-label">Nationality</label>
+              <input name="nationality" value={formData.nationality} onChange={handleInputChange} className="glass-input" placeholder="e.g. British" />
+            </div>
+            <div>
+              <label className="form-label">Special Needs</label>
+              <input name="special_needs" value={formData.special_needs} onChange={handleInputChange} className="glass-input" placeholder="e.g. Ground floor required" />
+            </div>
+          </div>
+        </section>
+
+        <section className="form-group" style={{ marginTop: '2rem' }}>
+          <p className="form-section-title">Contact Details</p>
+          <div className="form-grid">
+            <div>
+              <label className="form-label">Email Address *</label>
+              <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="glass-input" placeholder="e.g. student@uni.edu" />
+            </div>
+            <div>
+              <label className="form-label">Phone Number</label>
+              <input name="phone" value={formData.phone} onChange={handleInputChange} className="glass-input" placeholder="e.g. +44 7700 900000" />
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label className="form-label">Home Address</label>
+              <input name="address" value={formData.address} onChange={handleInputChange} className="glass-input" placeholder="e.g. 123 University Road, London" />
+            </div>
+          </div>
+        </section>
+
+        <section className="form-group" style={{ marginTop: '2rem' }}>
+          <p className="form-section-title">Academic & Housing Information</p>
+          <div className="form-grid">
+            <div>
+              <label className="form-label">Major Program</label>
+              <input name="major" value={formData.major} onChange={handleInputChange} className="glass-input" placeholder="e.g. Computer Science" />
+            </div>
+            <div>
+              <label className="form-label">Minor Program</label>
+              <input name="minor" value={formData.minor} onChange={handleInputChange} className="glass-input" placeholder="e.g. Mathematics" />
+            </div>
+            <div>
+              <label className="form-label">Course Number</label>
+              <input name="course_number" value={formData.course_number} onChange={handleInputChange} className="glass-input" placeholder="e.g. C101" />
+            </div>
+            <div>
+              <label className="form-label">Housing Status *</label>
+              <select name="status" value={formData.status} onChange={handleInputChange} className="glass-select">
+                <option value="waiting">Waiting List</option>
+                <option value="placed">Placed in Room</option>
               </select>
             </div>
           </div>
