@@ -79,7 +79,8 @@ CREATE TABLE HallOfResidence (
 CREATE TABLE StudentApartment (
     flat_number VARCHAR(20) PRIMARY KEY,
     address VARCHAR(255) NOT NULL,
-    available_bedrooms INT DEFAULT 0 -- Redundant but required by problem statement
+    available_bedrooms INT DEFAULT 4,
+    CONSTRAINT chk_bedrooms CHECK (available_bedrooms IN (3, 4, 5))
 );
 
 -- 7. Room Table (Place Number identifies room across all buildings)

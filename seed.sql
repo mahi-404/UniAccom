@@ -17,10 +17,11 @@ INSERT INTO HallOfResidence (hall_name, address, telephone, manager_id) VALUES
 ('Hall A', 'University West Campus', '555-2001', 1001),
 ('Hall B', 'University East Campus', '555-2002', 1002);
 
--- 3. Populate Student Apartments
+-- 3. Populate Student Apartments (Groups of 3, 4, or 5)
 INSERT INTO StudentApartment (flat_number, address, available_bedrooms) VALUES
 ('Flat 101', '10 Main Street', 3),
-('Flat 102', '20 Main Street', 0);
+('Flat 102', '20 Main Street', 4),
+('Flat 103', '30 Main Street', 5);
 
 -- 4. Populate Rooms (Place Number 1-46)
 INSERT INTO Room (room_number, room_type, monthly_rent, hall_name, flat_number) VALUES
@@ -51,10 +52,22 @@ INSERT INTO Room (room_number, room_type, monthly_rent, hall_name, flat_number) 
 ('B-17', 'Single', 20000.00, 'Hall B', NULL), ('B-18', 'Single', 20000.00, 'Hall B', NULL),
 ('B-19', 'Single', 20000.00, 'Hall B', NULL), ('B-20', 'Single', 20000.00, 'Hall B', NULL),
 
--- Student Apartments (Places 44, 45, 46)
+-- Student Apartments (Places 44 to 55)
+-- Flat 101 (3 Bedrooms)
 ('101A', 'Single', 20000.00, NULL, 'Flat 101'),
 ('101B', 'Single', 20000.00, NULL, 'Flat 101'),
-('102A', 'Suite', 20000.00, NULL, 'Flat 102');
+('101C', 'Single', 20000.00, NULL, 'Flat 101'),
+-- Flat 102 (4 Bedrooms)
+('102A', 'Single', 20000.00, NULL, 'Flat 102'),
+('102B', 'Single', 20000.00, NULL, 'Flat 102'),
+('102C', 'Single', 20000.00, NULL, 'Flat 102'),
+('102D', 'Single', 20000.00, NULL, 'Flat 102'),
+-- Flat 103 (5 Bedrooms)
+('103A', 'Single', 20000.00, NULL, 'Flat 103'),
+('103B', 'Single', 20000.00, NULL, 'Flat 103'),
+('103C', 'Single', 20000.00, NULL, 'Flat 103'),
+('103D', 'Single', 20000.00, NULL, 'Flat 103'),
+('103E', 'Single', 20000.00, NULL, 'Flat 103');
 
 -- 5. Populate Courses
 INSERT INTO Course (course_number, title, instructor_name, instructor_phone, email, room, department) VALUES
@@ -93,4 +106,4 @@ INSERT INTO Invoice (lease_number, semester, payment_due, due_date, date_invoice
 INSERT INTO Inspection (flat_number, staff_number, inspection_date, satisfactory_condition, comments) VALUES
 ('Flat 101', 1005, '2026-03-01', TRUE, 'All good'),
 ('Flat 101', 1005, '2026-04-01', FALSE, 'Needs minor plumbing repair'),
-('Flat 102', 1005, '2026-04-02', FALSE, 'Broken window in bedroom 1'); -- Unsatisfactory for Query (g)
+('Flat 102', 1005, '2026-04-02', FALSE, 'Broken window in bedroom 1');
