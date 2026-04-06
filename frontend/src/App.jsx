@@ -42,6 +42,7 @@ const App = () => {
     { id: 'total-rent', label: 'Total Rent Paid', icon: DollarSign, endpoint: (p) => `/api/reports/total-rent/${p}`, requiresParam: true, paramLabel: 'Banner Number', paramType: 'text', title: 'Total Rent by Student', category: 'Advanced Queries' },
     { id: 'unpaid-invoices', label: 'Unpaid Invoices', icon: FileWarning, endpoint: (p) => `/api/reports/unpaid-invoices?date=${p}`, requiresParam: true, paramLabel: 'Cutoff Date', paramType: 'date', title: 'Unpaid Invoices by Date', category: 'Advanced Queries' },
     { id: 'hall-students', label: 'Students in Hall', icon: Home, endpoint: (p) => `/api/reports/hall-students/${p}`, requiresParam: true, paramLabel: 'Hall Name', paramType: 'text', title: 'Students by Residence Hall', category: 'Advanced Queries' },
+    { id: 'flat-students', label: 'Students in Flat', icon: Users, endpoint: (p) => `/api/reports/flat-students/${p}`, requiresParam: true, paramLabel: 'Flat Number', paramType: 'text', title: 'Students by Student Flat', category: 'Advanced Queries' },
     { id: 'student-adviser', label: 'Student Adviser', icon: UserCircle, endpoint: (p) => `/api/reports/student-adviser/${p}`, requiresParam: true, paramLabel: 'Banner Number', paramType: 'text', title: 'Adviser Contact Details', category: 'Advanced Queries' },
     { id: 'free-rooms', label: 'Available Rooms', icon: Home, endpoint: (p) => `/api/reports/free-rooms/${p}`, requiresParam: true, paramLabel: 'Hall Name', paramType: 'text', title: 'Available Rooms in Hall', category: 'Advanced Queries' },
     { id: 'free-flats', label: 'Available Flats', icon: Building2, endpoint: '/api/reports/free-flats', title: 'Available Rooms in Student Flats', category: 'Advanced Queries' }
@@ -192,6 +193,7 @@ const App = () => {
           { header: 'Due Date', key: 'due_date' }
         ];
       case 'hall-students':
+      case 'flat-students':
         return [
           { header: 'Banner #', key: 'banner_number' },
           { header: 'Student', key: 'name', render: (_, row) => `${row.first_name} ${row.last_name}` },

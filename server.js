@@ -119,6 +119,23 @@ app.get('/api/reports/hall-students/:hall_name', async (req, res) => {
     }
 });
 
+// Students in a particular flat (Extension of query g)
+app.get('/api/reports/flat-students/:flat_number', async (req, res) => {
+    try {
+        const { flat_number } = req.params;
+        const [rows] = await db.query(`
+            SELECT s.first_name, s.last_name, s.banner_number, r.room_number, r.place_number
+            FROM Student s
+            JOIN Lease l ON s.banner_number = l.student_banner_number
+            JOIN Room r ON l.place_number = r.place_number
+            WHERE r.flat_number = ?
+        `, [flat_number]);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Available rooms in a given hall (User Addition)
 app.get('/api/reports/free-rooms/:hall_name', async (req, res) => {
     try {
