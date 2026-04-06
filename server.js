@@ -262,7 +262,7 @@ app.get('/api/reports/senior-staff', async (req, res) => {
 
 // --- NEW RECORD CREATION ---
 
-// Add a new Student
+// Add a new Student with Auto-Allocator sequence
 app.post('/api/students', async (req, res) => {
     try {
         const { 
@@ -275,7 +275,8 @@ app.post('/api/students', async (req, res) => {
             return res.status(400).json({ error: 'Missing required student fields' });
         }
 
-        const [result] = await db.query(`
+        // 1. Insert Student (Defaulting to waiting)
+        await db.query(`
             INSERT INTO Student (
                 banner_number, first_name, last_name, email, dob, gender, category,
                 address, phone, nationality, special_needs, comments, status, major, minor, adviser_id, course_number
@@ -287,7 +288,38 @@ app.post('/api/students', async (req, res) => {
             adviser_id || null, course_number || null
         ]);
 
-        res.status(201).json({ message: 'Student created successfully', banner_number });
+        // 2. Attempt Auto-Allocation
+        const [freeRooms] = await db.query(`
+            SELECT place_number, monthly_rent FROM Room 
+            WHERE place_number NOT IN (
+                SELECT place_number FROM Lease WHERE CURDATE() BETWEEN enter_date AND leave_date
+            ) LIMIT 1
+        `);
+
+        if (freeRooms.length > 0) {
+            const room = freeRooms[0];
+            
+            // a. Create Lease (1 Semester = ~6 Months)
+            const [leaseResult] = await db.query(`
+                INSERT INTO Lease (student_banner_number, place_number, duration_semesters, enter_date, leave_date)
+                VALUES (?, ?, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 6 MONTH))
+            `, [banner_number, room.place_number]);
+
+            const leaseNumber = leaseResult.insertId;
+
+            // b. Create Invoice (Rent * 4 Months)
+            await db.query(`
+                INSERT INTO Invoice (lease_number, semester, payment_due, due_date, date_invoice_sent)
+                VALUES (?, 'Current Semester', ?, DATE_ADD(CURDATE(), INTERVAL 1 MONTH), CURDATE())
+            `, [leaseNumber, room.monthly_rent * 4]);
+
+            // c. Update status to placed
+            await db.query(`UPDATE Student SET status = 'placed' WHERE banner_number = ?`, [banner_number]);
+
+            return res.status(201).json({ message: `Student registered and AUTO-PLACED in Place: ${room.place_number}`, banner_number });
+        }
+
+        res.status(201).json({ message: 'Student registered successfully (Added to Waiting List)', banner_number });
     } catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ error: 'Student with this Banner Number or Email already exists' });
