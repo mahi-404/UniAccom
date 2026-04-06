@@ -13,7 +13,10 @@ import {
   Building2,
   ChevronRight,
   TrendingDown,
-  Info
+  Info,
+  X,
+  CheckCircle2,
+  Plus
 } from 'lucide-react';
 
 const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
@@ -30,6 +33,25 @@ const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
     <span className="font-medium text-sm">{label}</span>
   </button>
 );
+
+const Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-[#1e293b] border border-white/10 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
+        <div className="p-6 border-b border-white/5 flex justify-between items-center">
+          <h3 className="text-xl font-bold text-white">{title}</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+            <X size={24} />
+          </button>
+        </div>
+        <div className="p-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ReportTable = ({ data, columns }) => {
   if (!data || data.length === 0) {
@@ -71,7 +93,12 @@ const App = () => {
   const [activeReport, setActiveReport] = useState('hall-managers');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    banner_number: '', first_name: '', last_name: '', email: '', 
+    dob: '', gender: 'M', category: 'Undergraduate', major: '', phone: ''
+  });
+  const [statusMsg, setStatusMsg] = useState({ type: '', text: '' });
 
   const reports = [
     { id: 'hall-managers', label: 'Hall Managers', icon: Building2, endpoint: '/api/reports/hall-managers', title: 'Residence Hall Managers & Contacts' },
@@ -103,6 +130,27 @@ const App = () => {
   useEffect(() => {
     fetchReportData(activeReport);
   }, [activeReport]);
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatusMsg({ type: '', text: '' });
+    try {
+      await axios.post('/api/students', formData);
+      setStatusMsg({ type: 'success', text: 'Student added successfully!' });
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setFormData({ banner_number: '', first_name: '', last_name: '', email: '', dob: '', gender: 'M', category: 'Undergraduate', major: '', phone: '' });
+        setStatusMsg({ type: '', text: '' });
+        fetchReportData(activeReport);
+      }, 2000);
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: err.response?.data?.error || 'Failed to add student' });
+    }
+  };
 
   const getColumns = () => {
     switch (activeReport) {
@@ -223,7 +271,14 @@ const App = () => {
           </div>
           
           <div className="flex space-x-4">
-             <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold shadow-lg shadow-indigo-500/20 transition-all">
+             <button 
+               onClick={() => setIsModalOpen(true)}
+               className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold shadow-lg shadow-indigo-500/20 transition-all flex items-center space-x-2"
+             >
+                <Plus size={18} />
+                <span>Add Student</span>
+             </button>
+             <button className="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-semibold border border-white/5 transition-all">
                 Export PDF
              </button>
           </div>
@@ -260,14 +315,85 @@ const App = () => {
         </div>
       </main>
 
+      {/* Add Student Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Register New Student">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Banner Number *</label>
+              <input required name="banner_number" value={formData.banner_number} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" placeholder="B000..." />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Category *</label>
+              <select name="category" value={formData.category} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all">
+                <option>Undergraduate</option>
+                <option>Postgraduate</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">First Name *</label>
+              <input required name="first_name" value={formData.first_name} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Last Name *</label>
+              <input required name="last_name" value={formData.last_name} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Email *</label>
+              <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Phone</label>
+              <input name="phone" value={formData.phone} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Date of Birth *</label>
+              <input required type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-400">Gender *</label>
+              <select name="gender" value={formData.gender} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm text-slate-400">Major / Program of Study</label>
+            <input name="major" value={formData.major} onChange={handleInputChange} className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-4 py-2 focus:border-indigo-500 outline-none transition-all" />
+          </div>
+
+          {statusMsg.text && (
+            <div className={`p-4 rounded-lg flex items-center space-x-3 ${statusMsg.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+              {statusMsg.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+              <span className="text-sm font-medium">{statusMsg.text}</span>
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-4 pt-4 border-t border-white/5">
+            <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2 text-slate-400 hover:text-white transition-colors">Cancel</button>
+            <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded-lg font-semibold shadow-lg shadow-indigo-500/20 transition-all">
+              Save Student
+            </button>
+          </div>
+        </form>
+      </Modal>
+
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-up {
+          from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease forwards;
-        }
+        .animate-fade-in { animation: fade-in 0.4s ease forwards; }
+        .animate-slide-up { animation: slide-up 0.4s ease forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
       `}} />
     </div>
   );

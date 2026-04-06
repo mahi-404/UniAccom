@@ -223,6 +223,42 @@ app.get('/api/reports/senior-staff', async (req, res) => {
     }
 });
 
+// --- NEW RECORD CREATION ---
+
+// Add a new Student
+app.post('/api/students', async (req, res) => {
+    try {
+        const { 
+            banner_number, first_name, last_name, email, dob, gender, category,
+            address, phone, nationality, special_needs, comments, status, major, minor, adviser_id, course_number
+        } = req.body;
+
+        // Basic validation for required fields
+        if (!banner_number || !first_name || !last_name || !email || !dob || !gender || !category) {
+            return res.status(400).json({ error: 'Missing required student fields' });
+        }
+
+        const [result] = await db.query(`
+            INSERT INTO Student (
+                banner_number, first_name, last_name, email, dob, gender, category,
+                address, phone, nationality, special_needs, comments, status, major, minor, adviser_id, course_number
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            banner_number, first_name, last_name, email, dob, gender, category,
+            address || null, phone || null, nationality || null, special_needs || null, 
+            comments || null, status || 'waiting', major || null, minor || null, 
+            adviser_id || null, course_number || null
+        ]);
+
+        res.status(201).json({ message: 'Student created successfully', banner_number });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ error: 'Student with this Banner Number or Email already exists' });
+        }
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Basic endpoint to check if server is running
 app.get('/', (req, res) => {
     res.send('University Accommodation API is running');
